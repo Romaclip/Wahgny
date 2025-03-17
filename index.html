@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جاوب وخذها</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        .logo-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .game-logo {
+            width: 60px; /* أو حسب حجم شعارك */
+            height: 60px;
+            margin-left: 10px;
+        }
+        .welcome-msg {
+            font-size: 18px;
+            color: #dadada;
+            margin: 10px 0;
+        }
+        .challenge-card-item {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .challenge-card-item p {
+            margin: 5px 0;
+        }
+        #challengeCardsPopup {
+            width: 80%;
+            max-width: 600px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+        #challengeCardsOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+        }
+        #challengeCardsPopup.active, #challengeCardsOverlay.active {
+            display: block;
+        }
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .page {
+            flex: 1;
+        }
+        #footer-container {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- الصفحة الرئيسية -->
+    <div id="home" class="page">
+        <div class="logo-header">
+            <img src="logo.png" alt="شعار اللعبة" class="game-logo">
+            <h1>جاوب وخذها</h1>
+        </div>
+        <div class="header">
+            <p class="welcome-msg">يا هلا ومرحبا بالربع! استعدوا للتحدي والوناسة مع جاوب وخذها، لعبة الكويتيين المفضلة!</p>
+            <p class="subtitle">تحدى معلوماتك واستمتع مع أصدقائك!</p>
+        </div>
+        <div class="buttons">
+            <button class="btn" onclick="showRules()">القوانين وطريقة اللعب</button>
+            <button class="btn" onclick="showChallengeCards()">كروت اللعبة مع الشرح</button>
+            <button class="btn start-btn" onclick="showSetup()">ابدأ المغامرة</button>
+        </div>
+    </div>
+
+    <!-- نافذة القوانين (Popup) -->
+    <div id="rulesPopup" class="popup">
+        <h2>القوانين وطريقة اللعب</h2>
+        <div class="rules-content">
+            <p><strong>الهدف:</strong> اجمع 10 نقاط لتفوز!</p>
+            <p><strong>كيف تلعب:</strong></p>
+            <ul>
+                <li>اختر عدد اللاعبين (2-6).</li>
+                <li>في كل دور، أجب على سؤال أو نفذ تحديًا.</li>
+                <li>الإجابة الصحيحة = نقطة.</li>
+                <li>الإجابة الخاطئة = كرت "وهقني" مع تحدٍ أو مكافأة.</li>
+                <li><span class="highlight">كرت ما أتوهق:</span> تخطى تحديًا لاحقًا.</li>
+                <li><span class="highlight">كرت حرامي:</span> اسرق كرت "ما أتوهق" من لاعب.</li>
+            </ul>
+        </div>
+        <button class="btn close-btn" onclick="closeRules()">إغلاق</button>
+    </div>
+    <div id="rulesOverlay" class="overlay" onclick="closeRules()"></div>
+
+    <!-- نافذة كروت اللعبة مع الشرح (Popup) -->
+    <div id="challengeCardsPopup" class="popup">
+        <h2>كروت اللعبة مع الشرح</h2>
+        <div id="challengeCardsContent" class="rules-content">
+            <div class="challenge-card-item">
+                <p><strong>كرت ما أتوهق</strong></p>
+                <p>تخطي تحدٍ لاحقًا.</p>
+            </div>
+            <div class="challenge-card-item">
+                <p><strong>كرت حرامي</strong></p>
+                <p>سرقة كرت "ما أتوهق" من لاعب آخر.</p>
+            </div>
+            <div class="challenge-card-item">
+                <p><strong>كرت توهق معاي</strong></p>
+                <p>مواجهة بينك وبين لاعب آخر، الفائز يحصل على نقطتين.</p>
+            </div>
+            <div class="challenge-card-item">
+                <p><strong>كرت أتحداك</strong></p>
+                <p>تحدٍ مع لاعب آخر، الخاسر يفقد فرصة النقاط.</p>
+            </div>
+            <div class="challenge-card-item">
+                <p><strong>كرت الحكم</strong></p>
+                <p>حكم جماعي من اللاعبين، نفذ أو اخسر نقطة.</p>
+            </div>
+            <div class="challenge-card-item">
+                <p><strong>كرت التمثيل</strong></p>
+                <p>تمثيل أو تقليد، نجحت تكسب نقطة، فشلت تخسر نقطة.</p>
+            </div>
+        </div>
+        <button class="btn close-btn" onclick="closeChallengeCards()">إغلاق</button>
+    </div>
+    <div id="challengeCardsOverlay" class="overlay" onclick="closeChallengeCards()"></div>
+
+    <!-- إعداد اللاعبين -->
+    <div id="setup" class="page" style="display: none;">
+        <h2>إعداد التحدي</h2>
+        <p>كم عدد المتنافسين؟ (2-6)</p>
+        <input type="number" id="numPlayers" min="2" max="6" value="2" class="input-field">
+        <button class="btn" onclick="setupPlayers()">تأكيد وإدخال الأسماء</button>
+        <div id="playerNames" class="player-inputs"></div>
+        <button id="startGameBtn" class="btn start-btn" onclick="startGame()" style="display: none;">انطلق!</button>
+    </div>
+
+    <!-- اللعبة -->
+    <div id="game" class="page" style="display: none;">
+        <div class="game-header">
+            <p id="currentPlayer" class="current-player">الدور لـ: ...</p>
+            <div id="playersList" class="players-grid"></div>
+        </div>
+        <div id="card-container" class="card-area">
+            <div id="card" class="card question">جاوب وخذها</div>
+        </div>
+        <div id="overlay" class="overlay" onclick="closePopup()"></div>
+        <div id="popup" class="popup game-popup"></div>
+    </div>
+
+    <!-- حاوية الـFooter -->
+    <div id="footer-container"></div>
+
+    <script src="questions.js"></script>
+    <script src="gameLogic.js"></script>
+    <script>
+        function showRules() {
+            document.getElementById("rulesPopup").classList.add("active");
+            document.getElementById("rulesOverlay").classList.add("active");
+        }
+
+        function closeRules() {
+            document.getElementById("rulesPopup").classList.remove("active");
+            document.getElementById("rulesOverlay").classList.remove("active");
+        }
+
+        function showChallengeCards() {
+            document.getElementById("challengeCardsPopup").classList.add("active");
+            document.getElementById("challengeCardsOverlay").classList.add("active");
+        }
+
+        function closeChallengeCards() {
+            document.getElementById("challengeCardsPopup").classList.remove("active");
+            document.getElementById("challengeCardsOverlay").classList.remove("active");
+        }
+
+        function showSetup() {
+            document.getElementById("home").style.display = "none";
+            document.getElementById("setup").style.display = "flex";
+        }
+
+        // استدعاء الـFooter من ملف خارجي
+        fetch('footer.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('footer-container').innerHTML = data;
+            })
+            .catch(error => console.error('خطأ في تحميل الـFooter:', error));
+    </script>
+</body>
+</html>
